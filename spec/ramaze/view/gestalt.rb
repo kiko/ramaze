@@ -42,12 +42,6 @@ module SpecGestaltView
     end
   end
 
-  # def external
-  #   ol do
-  #     3.times{ render_view('template') }
-  #   end
-  # end
-
   def with_partial
     ul do
       3.times{ _partial }
@@ -69,26 +63,26 @@ describe Ramaze::View::Gestalt do
   behaves_like :mock
 
   should 'use g helper' do
-     get('/').body.should == ['<h1>Gestalt Index</h1>']
+     get('/').body.join.should == '<h1>Gestalt Index</h1>'
    end
 
   should 'use other helper methods' do
-    get('/links').body.should ==
-      ['<ul><li><a href="/index">Index page</a></li><li><a href="/internal">Internal template</a></li><li><a href="/external">External template</a></li></ul>']
+    get('/links').body.join.should ==
+      '<ul><li><a href="/index">Index page</a></li><li><a href="/internal">Internal template</a></li><li><a href="/external">External template</a></li></ul>'
   end
 
   should 'render external template' do
-     get('/external').body.should ==
-      ["<html><head><title>Gestalt Test</title></head><body><h1>Gestalt Template</h1></body></html>"]
+     get('/external').body.join.should ==
+      "<html><head><title>Gestalt Test</title></head><body><h1>Gestalt Template</h1></body></html>"
   end
 
   should 'use method like partials' do
-    get('/with_partial').body.should ==
-      ['<ul><li>List Item</li><li>List Item</li><li>List Item</li></ul>']
+    get('/with_partial').body.join.should ==
+      '<ul><li>List Item</li><li>List Item</li><li>List Item</li></ul>'
   end
 
   should 'be able to specify different view module and method' do
-    get('/different_module').body.should ==
-      ['<p>view module specified</p>']
+    get('/different_module').body.join.should ==
+      '<p>view module specified</p>'
   end
 end
