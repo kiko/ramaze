@@ -1,4 +1,7 @@
-require 'spec/helper'
+#          Copyright (c) 2009 Michael Fellinger m.fellinger@gmail.com
+# All files in this distribution are subject to the terms of the Ruby license.
+
+require File.expand_path('../../../spec/helper', __FILE__)
 
 class SpecAppMain < Ramaze::Controller
   map '/', :core
@@ -36,7 +39,7 @@ Ramaze::App[:core].location = '/'
 Ramaze::App[:other].location = '/other'
 
 describe Ramaze::App do
-  behaves_like :mock
+  behaves_like :rack_test
 
   it 'handles call with rack env' do
     get('/').body.should == 'core main'

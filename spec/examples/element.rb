@@ -1,8 +1,9 @@
-require 'spec/helper'
-require 'examples/basic/element'
+require File.expand_path('../../../spec/helper', __FILE__)
+spec_require 'nagoro'
+require File.expand_path('../../../examples/basic/element', __FILE__)
 
 describe 'Element' do
-  behaves_like :mock
+  behaves_like :rack_test
 
   it '/' do
     r = get('/').body

@@ -1,7 +1,7 @@
 #          Copyright (c) 2009 Michael Fellinger m.fellinger@gmail.com
 # All files in this distribution are subject to the terms of the Ruby license.
 
-require 'spec/helper'
+require File.expand_path('../../../../spec/helper', __FILE__)
 spec_require 'remarkably'
 
 Ramaze::App.options.views = 'remarkably'
@@ -29,7 +29,7 @@ class SpecRemarkably < Ramaze::Controller
 end
 
 describe Ramaze::View::Remarkably do
-  behaves_like :mock
+  behaves_like :rack_test
 
   should 'use remarkably methods' do
     get('/').body.should == '<h1>Remarkably Index</h1>'

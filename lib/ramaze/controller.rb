@@ -19,21 +19,39 @@ module Ramaze
 
     def self.inherited(into)
       Innate::Node.included(into)
+      into.helper(:layout)
       CONTROLLER_LIST << into
       into.trait :skip_node_map => true
     end
 
     def self.setup
-      require 'ramaze/controller/default' if CONTROLLER_LIST.empty?
+      case CONTROLLER_LIST.size
+      when 0
+        require 'ramaze/controller/default'
+      when 1
+        controller = CONTROLLER_LIST.to_a.first
 
-      CONTROLLER_LIST.each do |controller|
-        unless controller.ancestral_trait[:provide_set]
-          controller.engine(:Etanni)
-          controller.trait(:provide_set => false)
+        begin
+          controller.mapping
+        rescue
+          controller.map '/'
         end
-        next if controller.trait[:skip_controller_map]
-        controller.map(generate_mapping(controller.name))
+
+        controller.setup_procedure
+      else
+        CONTROLLER_LIST.each do |controller|
+          controller.setup_procedure
+        end
       end
+    end
+
+    def self.setup_procedure
+      unless ancestral_trait[:provide_set]
+        engine(:Etanni)
+        trait(:provide_set => false)
+      end
+
+      map(generate_mapping(name)) unless trait[:skip_controller_map]
     end
 
     def self.engine(name)
@@ -50,7 +68,7 @@ module Ramaze
     }
 
     def self.generate_mapping(klass_name = self.name)
-      chunks = klass_name.split(/::/)
+      chunks = klass_name.to_s.split(/::/)
       return if chunks.empty?
 
       last = chunks.last
@@ -79,16 +97,6 @@ module Ramaze
     def self.options
       return unless app = self.app
       app.options
-    end
-
-    def self.template(*args)
-      Ramaze.deprecated('Controller::template', 'Controller::alias_view')
-      alias_view(*args)
-    end
-
-    def self.view_root(*locations)
-      Ramaze.deprecated('Controller::view_root', 'Controller::map_views')
-      map_views(*locations)
     end
   end
 end

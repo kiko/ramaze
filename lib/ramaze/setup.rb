@@ -4,7 +4,8 @@ module Ramaze
   # It's almost like Kernel#gem but also installs automatically if a gem is
   # missing.
   #
-  # @usage
+  # @example
+  #
   #   Ramaze.setup :verbose => true do
   #     # gem and specific version
   #     gem 'makura', '>=2009.01'
@@ -65,14 +66,20 @@ module Ramaze
 
     # first try to activate, install and try to activate again if activation
     # fails the first time
-    def setup_gem(name, options, try_install = true)
+    def setup_gem(name, options)
+      version = [options[:version]].compact
+      lib_name = options[:lib] || name
+
       log "activating #{name}"
-      Gem.activate(name, *[options[:version]].compact)
-      require(options[:lib] || name)
-    rescue LoadError => exception
-      puts exception
-      install_gem(name, options) if try_install
-      setup_gem(name, options, try_install = false)
+
+      Gem.activate(name, *version)
+      require(lib_name)
+
+    rescue LoadError
+
+      install_gem(name, options)
+      Gem.activate(name, *version)
+      require(lib_name)
     end
 
     # tell rubygems to install a gem
@@ -101,7 +108,13 @@ module Ramaze
     private
 
     def log(msg)
-      puts(msg) if @verbose
+      return unless @verbose
+
+      if defined?(Log)
+        Log.info(msg)
+      else
+        puts(msg)
+      end
     end
 
     def rubyforge; 'http://gems.rubyforge.org/' end

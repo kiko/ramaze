@@ -1,7 +1,7 @@
 #          Copyright (c) 2009 Michael Fellinger m.fellinger@gmail.com
 # All files in this distribution are subject to the terms of the Ruby license.
 
-require 'spec/helper'
+require File.expand_path('../../../spec/helper', __FILE__)
 require 'rexml/document'
 require 'rexml/xpath'
 
@@ -35,9 +35,9 @@ class SpecErrorHandling < SpecError
 end
 
 describe 'Error handling' do
-  behaves_like :mock
+  behaves_like :rack_test
 
-  Ramaze.options.mode = :live
+  Ramaze.options.mode = :dev
 
   it 'uses Rack::ShowException to display errors' do
     got = get('/raises')
@@ -66,7 +66,7 @@ describe 'Error handling' do
   end
 
   it 'uses Rack::RouteExceptions when a route is set' do
-    Rack::RouteExceptions[NameError] = '/handle/name_error'
+    Rack::RouteExceptions.route(NameError, '/handle/name_error')
 
     got = get('/raises')
     [got.status, got['Content-Type']].should == [200, 'text/html']

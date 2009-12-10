@@ -1,4 +1,4 @@
-          Copyright (c) 2008 Michael Fellinger m.fellinger@gmail.com
+          Copyright (c) 2009 Michael Fellinger m.fellinger@gmail.com
  All files in this distribution are subject to the terms of the Ruby license.
 
 # About Ramaze
@@ -13,7 +13,7 @@ give you the ultimate tools, but you have to use them yourself to achieve
 perfect custom-tailored results.
 
 Another one of the goals during development of Ramaze was to make every part as
-modular and therefor reuasable as possible, not only to provide a basic
+modular and therefor reusable as possible, not only to provide a basic
 understanding after the first glance, but also to make it as simple as possible
 to reuse parts of the code.
 
@@ -136,11 +136,6 @@ Ramaze offers following features at the moment:
 
       Wrapping the functionality of Ramazes logging facilities.
 
-    * Markaby
-
-      Allows you to use Markaby in your Controller without having it as the
-      default templating engine.
-
     * Nitroform
 
       Hooks up on nitros form builder to help you creating forms from Og
@@ -241,7 +236,7 @@ There are some basic principles that Ramaze tries to follow:
 
       $ gem install ramaze
 
-  Versions are made as we see fit and get an announcment out (usually that's
+  Versions are made as we see fit and get an announcement out (usually that's
   the major obstacle as there is a lot to announce).
 
   If you want to install the nightly gem of Ramaze you can do this with:
@@ -279,7 +274,7 @@ There are some basic principles that Ramaze tries to follow:
 
         $ export RUBYLIB="$HOME/ruby/ramaze/lib:$HOME/.site_ruby:$HOME/ruby/bacon/lib"
 
-  * use `require 'ramaze'` systemwide from everywhere
+  * use `require 'ramaze'` system wide from everywhere
 
     add a file to your `site_ruby` directory named 'ramaze.rb'
     the content should be: `require '/path/to/git/repo/ramaze/lib/ramaze'`
@@ -396,26 +391,12 @@ For help you can:
 
 - Visit us in the channel #ramaze on irc.freenode.net
 
-- Join the Mailinglist at http://ramaze.rubyforge.org
-
-
-# Appendix
-
-* Performance
-  * Serving
-
-    For best performance you should consider using Mongrel to host your
-    application.
-
-  * Caching
-
-    You can easily cache your pages using the CacheHelper.
-    Also, using MemCache gives you high-end performance and security.
+- Join the Mailinglist at http://groups.google.com/group/ramaze
 
 
 # And thanks to...
 
-There is a large number of people who made Ramaze possibe by their ongoing
+There is a large number of people who made Ramaze possible by their ongoing
 efforts in the world of open source and by encouraging and helping me.
 
 This list is by no means a full listing of all these people, but I try to
@@ -427,7 +408,7 @@ I would like to thank:
 
     For giving the world Ruby and bringing fun back into programming.
 
-* Zed Shawn a.k.a. zedas
+* Zed Shaw a.k.a. zedas
 
     For developing Mongrel, Ramaze started out as a simple Hello World based
     on that awesome server.

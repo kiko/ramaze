@@ -1,4 +1,7 @@
-require 'spec/helper'
+#          Copyright (c) 2009 Michael Fellinger m.fellinger@gmail.com
+# All files in this distribution are subject to the terms of the Ruby license.
+
+require File.expand_path('../../../spec/helper', __FILE__)
 
 class SpecFilesCore < Ramaze::Controller
   map '/', :core
@@ -17,7 +20,7 @@ Ramaze::App[:other].options.publics = 'files/public_2'
 Ramaze.middleware!(:spec){|m| m.run(Ramaze::AppMap) }
 
 describe Ramaze::Files do
-  behaves_like :mock
+  behaves_like :rack_test
 
   it 'serves files for core app from public_1' do
     get('/plain.txt').body.should == "Just some text in a file\n"

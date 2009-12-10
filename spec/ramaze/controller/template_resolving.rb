@@ -1,7 +1,7 @@
 #          Copyright (c) 2009 Michael Fellinger m.fellinger@gmail.com
 # All files in this distribution are subject to the terms of the Ruby license.
 
-require 'spec/helper'
+require File.expand_path('../../../../spec/helper', __FILE__)
 
 class SpecViewAlias < Ramaze::Controller
   map '/'
@@ -44,7 +44,7 @@ class SpecViewAlias2 < SpecViewAlias
 end
 
 describe "Template aliasing" do
-  behaves_like :mock
+  behaves_like :rack_test
 
   it 'serves normal template' do
     get('/greet/asdf').body.should == '<html>asdf : Message</html>'

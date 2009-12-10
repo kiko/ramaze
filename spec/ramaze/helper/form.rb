@@ -1,4 +1,7 @@
-require 'spec/helper'
+#          Copyright (c) 2009 Michael Fellinger m.fellinger@gmail.com
+# All files in this distribution are subject to the terms of the Ruby license.
+
+require File.expand_path('../../../../spec/helper', __FILE__)
 
 spec_requires 'hpricot'
 
@@ -42,7 +45,7 @@ class SpecHelperForm < Ramaze::Controller
 
   def select_array_multiple
     languages = %w[ English German Japanese ]
-    form_select('Languages', :languages, languages, :multiple => true)
+    form_select('Languages', :languages, languages, :multiple => 1)
   end
 
   def select_array_selected
@@ -57,7 +60,7 @@ class SpecHelperForm < Ramaze::Controller
 end
 
 describe Ramaze::Helper::Form do
-  behaves_like :mock
+  behaves_like :rack_test
 
   it 'provides empty text input' do
     got = get('/text')

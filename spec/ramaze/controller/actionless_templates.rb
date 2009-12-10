@@ -1,7 +1,7 @@
 #          Copyright (c) 2009 Michael Fellinger m.fellinger@gmail.com
 # All files in this distribution are subject to the terms of the Ruby license.
 
-require 'spec/helper'
+require File.expand_path('../../../../spec/helper', __FILE__)
 
 Ramaze::App.options.merge!(:layouts => 'view')
 
@@ -23,7 +23,7 @@ class SpecActionlessTemplatesLayout < Ramaze::Controller
 end
 
 describe "Testing Actionless Templates" do
-  behaves_like :mock
+  behaves_like :rack_test
 
   it "should not find template file for non existant method" do
     get('/list').status.should == 404

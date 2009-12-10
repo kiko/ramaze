@@ -16,7 +16,7 @@ module Ramaze
         into.extend(SingletonMethods)
         into.add_action_wrapper(6.0, :cache_wrap)
         into.trait[:cache_action] ||= Set.new
-        Ramaze::Cache.add(:action, :action_value)
+        Ramaze::Cache.add(:action, :cache_helper_value)
       end
 
       # @param [Action] action The currently wrapped action
@@ -58,28 +58,54 @@ module Ramaze
         yield
       end
 
-      # @return [Object] The cache wrapper assigned for :action_value
+      # This method is used to access Ramaze::Cache.cache_helper_value.
+      # It provides an easy way to cache long-running computations, gathering
+      # external resources like RSS feeds or DB queries that are the same for
+      # every user of an application.
+      # This method changes behaviour if a block is passed, which can be used
+      # to do lazy computation of the cached value conveniently when using a
+      # custom TTL or longer expressions that don't fit on one line with ||=.
+      #
+      # @usage Example to get the cache object directly
+      #
+      #   count = cache_value[:count] ||= Article.count
+      #
+      # @usage Example with block
+      #
+      #   count = cache_value(:count){ Article.count }
+      #   count = cache_value(:count, :ttl => 60){ Article.count }
+      #
+      # @return [Object] The cache wrapper assigned for :cache_helper_value
       # @see Innate::Cache
       # @author manveru
-      def cache_value
-        Ramaze::Cache.action_value
-      end
+      def cache_value(key = nil, options = {})
+        cache = Ramaze::Cache.cache_helper_value
 
-
-      # @deprecated Use the #cache_value method instead
-      # @author manveru
-      def value_cache
-        Ramaze::deprecated('Innate::Helper::Cache#value_cache',
-                           'Innate::Helper::Cache#cache_value')
-        cache_value
+        if key and block_given?
+          if found = cache[key]
+            found
+          else
+            cache.store(key, yield, options)
+          end
+        else
+          cache
+        end
       end
 
       module SingletonMethods
-        def cache(name, hash = {})
-          Ramaze.deprecated('Helper::Cache::cache', 'Helper::Cache::cache_action')
-          cache_action(hash.merge(:method => name))
-        end
-
+        # This method allows you to cache whole actions.
+        #
+        # @example Basic usage
+        #
+        #   class Foo < Ramaze::Controller
+        #     helper :cache
+        #     cache_action :method => :bar
+        #
+        #     def bar
+        #       rand
+        #     end
+        #   end
+        #
         def cache_action(hash, &block)
           hash[:key] = block if block_given?
           hash[:method] = hash[:method].to_s

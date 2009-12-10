@@ -1,7 +1,7 @@
 #          Copyright (c) 2009 Michael Fellinger m.fellinger@gmail.com
 # All files in this distribution are subject to the terms of the Ruby license.
 
-require 'spec/helper'
+require File.expand_path('../../../../spec/helper', __FILE__)
 
 class SpecHelperFlash < Ramaze::Controller
   map '/'
@@ -23,7 +23,7 @@ class SpecHelperFlash < Ramaze::Controller
 end
 
 describe Ramaze::Helper::Flash do
-  behaves_like :mock
+  behaves_like :rack_test
 
   it 'displays a flashbox with one item' do
     get('/populate_one')

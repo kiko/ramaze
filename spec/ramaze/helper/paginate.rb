@@ -1,4 +1,7 @@
-require 'spec/helper'
+#          Copyright (c) 2009 Michael Fellinger m.fellinger@gmail.com
+# All files in this distribution are subject to the terms of the Ruby license.
+
+require File.expand_path('../../../../spec/helper', __FILE__)
 spec_require 'hpricot'
 
 class SpecHelperPaginateArray < Ramaze::Controller
@@ -23,7 +26,7 @@ end
 
 describe Ramaze::Helper::Paginate do
   describe 'Array' do
-    behaves_like :mock
+    behaves_like :rack_test
 
     it 'shows navigation for page 1' do
       doc = Hpricot(get("/array/navigation").body)

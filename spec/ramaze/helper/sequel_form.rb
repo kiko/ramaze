@@ -1,10 +1,15 @@
-require 'spec/helper'
+#          Copyright (c) 2009 Michael Fellinger m.fellinger@gmail.com
+# All files in this distribution are subject to the terms of the Ruby license.
+
+require File.expand_path('../../../../spec/helper', __FILE__)
 
 spec_requires 'hpricot', 'sequel'
 
 DB = Sequel.sqlite
 
 class User < Sequel::Model(:user)
+  plugin :schema
+
   set_schema do
     primary_key :id
 
@@ -41,7 +46,7 @@ class FormController < Ramaze::Controller
 end
 
 describe Ramaze::Helper::SequelForm do
-  behaves_like :mock
+  behaves_like :rack_test
 
   def hget(uri)
     got = get(uri)

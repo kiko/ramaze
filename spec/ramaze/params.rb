@@ -1,7 +1,7 @@
 #          Copyright (c) 2009 Michael Fellinger m.fellinger@gmail.com
 # All files in this distribution are subject to the terms of the Ruby license.
 
-require 'spec/helper'
+require File.expand_path('../../../spec/helper', __FILE__)
 
 class TCParamsController < Ramaze::Controller
   map '/'
@@ -51,7 +51,7 @@ class TCParamsController2 < Ramaze::Controller
   end
 
   def keys
-    request.params.keys.to_s.dump
+    request.params.keys.inspect
   end
 end
 
@@ -64,7 +64,7 @@ class TCParamsController3 < Ramaze::Controller
 end
 
 describe "Simple Parameters" do
-  behaves_like :mock
+  behaves_like :rack_test
 
   def handle(*url)
     Ramaze::Mock.get(*url).body
@@ -103,8 +103,7 @@ describe "Simple Parameters" do
   end
 
   it "action that takes all params but needs at least one (not given here)" do
-    lambda{ handle('/at_least_one') }.
-      should.raise(ArgumentError)
+    lambda{ handle('/at_least_one') }.should.raise(ArgumentError)
   end
 
   it "one default" do
@@ -149,6 +148,6 @@ describe "Simple Parameters" do
   end
 
   it 'should handle valueless params' do
-    handle('/jo/keys?foo').should == '"foo"'
+    handle('/jo/keys?foo').should == '["foo"]'
   end
 end

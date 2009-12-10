@@ -13,6 +13,12 @@ module Ramaze
         form_input(label, hash)
       end
 
+      def form_checkbox_tag(label, name, value, checked = false)
+        hash = {:type => :checkbox, :name => name + '[]', :value => value}
+        hash[:checked] = 'checked' if checked
+        form_input(label, hash)
+      end
+
       def form_password(label, name)
         form_input(label, :type => :password, :name => name)
       end
@@ -35,13 +41,25 @@ module Ramaze
         Ramaze::Gestalt.build{ tr{ td(:colspan => 2){ input(hash) }}}
       end
 
+      # @example usage, normal select drop-down
+      #
+      #   form_select('Favourite colors', :colors, @colors, :selected => @color)
+      #
+      # @example usage for pre-selected value
+      #
+      #   form_select('Favourite colors', :colors, @colors, :selected => @color)
+      #
+      # @example usage, allow selecting multiple
+      #
+      #   form_select('Cups', :cups, @cups, :selected => @cup, :multiple => 5)
       def form_select(label, name, values, hash = {})
         name = name.to_sym
         id = "form-#{name}"
+        multiple, size = hash.values_at(:multiple, :size)
 
         s_args = {:name => name, :id => id}.merge(form_tabindex)
-        s_args[:multiple] = :multiple if hash[:multiple]
-        s_args[:size] = hash[:size] || 1
+        s_args[:multiple] = :multiple if multiple
+        s_args[:size] = (size || multiple || 1).to_i
 
         has_selected, selected = hash.key?(:selected), hash[:selected]
         error = form_errors[name.to_s]

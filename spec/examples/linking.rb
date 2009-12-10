@@ -1,8 +1,8 @@
-require 'spec/helper'
-require 'examples/basic/linking'
+require File.expand_path('../../../spec/helper', __FILE__)
+require File.expand_path('../../../examples/basic/linking', __FILE__)
 
 describe 'Linking' do
-  behaves_like :mock
+  behaves_like :rack_test
 
   it 'should provide a link to help' do
     r = get('/').body

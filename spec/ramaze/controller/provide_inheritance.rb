@@ -1,4 +1,7 @@
-require 'spec/helper'
+#          Copyright (c) 2009 Michael Fellinger m.fellinger@gmail.com
+# All files in this distribution are subject to the terms of the Ruby license.
+
+require File.expand_path('../../../../spec/helper', __FILE__)
 
 class SpecControllerInheritedMain < Ramaze::Controller
   Ramaze.node('/')
@@ -25,7 +28,7 @@ class SpecControllerInheritedYetAnother < SpecControllerInheritedAnother
 end
 
 describe 'Ramaze::Controller#self.inherited' do
-  behaves_like :mock
+  behaves_like :rack_test
 
   should 'default renders nagoro' do
     get('/').body.should == "<p>Main is nagoro</p>"

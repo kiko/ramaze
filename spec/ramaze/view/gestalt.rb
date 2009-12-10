@@ -1,7 +1,7 @@
-# Copyright (c) 2009 Michael Fellinger m.fellinger@gmail.com
+#          Copyright (c) 2009 Michael Fellinger m.fellinger@gmail.com
 # All files in this distribution are subject to the terms of the Ruby license.
 
-require 'spec/helper'
+require File.expand_path('../../../../spec/helper', __FILE__)
 spec_require 'ramaze/gestalt'
 
 Ramaze::App.options.views = 'gestalt'
@@ -60,29 +60,29 @@ module SpecGestalDifferentModule
 end
 
 describe Ramaze::View::Gestalt do
-  behaves_like :mock
+  behaves_like :rack_test
 
   should 'use g helper' do
-     get('/').body.join.should == '<h1>Gestalt Index</h1>'
+     get('/').body.should == '<h1>Gestalt Index</h1>'
    end
 
   should 'use other helper methods' do
-    get('/links').body.join.should ==
+    get('/links').body.should ==
       '<ul><li><a href="/index">Index page</a></li><li><a href="/internal">Internal template</a></li><li><a href="/external">External template</a></li></ul>'
   end
 
   should 'render external template' do
-     get('/external').body.join.should ==
+     get('/external').body.should ==
       "<html><head><title>Gestalt Test</title></head><body><h1>Gestalt Template</h1></body></html>"
   end
 
   should 'use method like partials' do
-    get('/with_partial').body.join.should ==
+    get('/with_partial').body.should ==
       '<ul><li>List Item</li><li>List Item</li><li>List Item</li></ul>'
   end
 
   should 'be able to specify different view module and method' do
-    get('/different_module').body.join.should ==
+    get('/different_module').body.should ==
       '<p>view module specified</p>'
   end
 end

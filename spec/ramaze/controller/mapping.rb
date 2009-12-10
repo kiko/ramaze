@@ -1,4 +1,7 @@
-require 'spec/helper'
+#          Copyright (c) 2009 Michael Fellinger m.fellinger@gmail.com
+# All files in this distribution are subject to the terms of the Ruby license.
+
+require File.expand_path('../../../../spec/helper', __FILE__)
 
 describe 'Controller::generate_mapping' do
   def gen(klass)
@@ -39,19 +42,5 @@ describe 'Controller::generate_mapping' do
 
   it "doesn't map anonymous classes" do
     gen(Class.new.name).should == nil
-  end
-end
-
-class SpecControllerMapping < Ramaze::Controller
-  def index
-    'automatically mapped'
-  end
-end
-
-describe 'Controller automap' do
-  behaves_like :mock
-
-  it 'automatically creates an app and maps the controller into it' do
-    get('/spec_controller_mapping').body.should == 'automatically mapped'
   end
 end

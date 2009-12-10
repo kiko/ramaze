@@ -1,7 +1,7 @@
 #          Copyright (c) 2009 Michael Fellinger m.fellinger@gmail.com
 # All files in this distribution are subject to the terms of the Ruby license.
 
-require 'spec/helper'
+require File.expand_path('../../../../spec/helper', __FILE__)
 
 class MainController < Ramaze::Controller
   map '/'
@@ -13,7 +13,7 @@ class MainController < Ramaze::Controller
 end
 
 describe 'Controller resolving' do
-  behaves_like :mock
+  behaves_like :rack_test
 
   it 'should work with .' do
     get('/file.ext').body.should == 'file.ext'

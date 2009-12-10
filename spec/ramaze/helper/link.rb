@@ -1,8 +1,7 @@
 #          Copyright (c) 2009 Michael Fellinger m.fellinger@gmail.com
 # All files in this distribution are subject to the terms of the Ruby license.
 
-require 'spec/helper'
-require 'ramaze/helper/link'
+require File.expand_path('../../../../spec/helper', __FILE__)
 
 class SpecHelperLink < Ramaze::Controller
   map '/'
@@ -12,18 +11,18 @@ class SpecHelperLinkTwo < Ramaze::Controller
   map '/two'
 end
 
+class SpecHelperApp < Ramaze::Controller
+  map '/', :other
+end
+
+class SpecHelperAppTwo < Ramaze::Controller
+  map '/two', :other
+end
+
+Ramaze::App[:other].location = '/other'
+
 describe Ramaze::Helper::Link do
   extend Ramaze::Helper::Link
-
-  it 'builds routes' do
-    R(SpecHelperLink, :foo).should == '/foo'
-    SpecHelperLink.Rs(:foo).should == '/foo'
-  end
-
-  it 'builds links' do
-    SpecHelperLink.A(:foo).should == '<a href="/foo">foo</a>'
-    SpecHelperLink.A(:foo, :bar).should == '<a href="/bar">foo</a>'
-  end
 
   it 'lays out breadcrumbs' do
     SpecHelperLink.breadcrumbs('/file/dir/listing/is/cool').
@@ -45,5 +44,27 @@ describe Ramaze::Helper::Link do
       '<a href="/prefix/path/file/dir/listing/is">is</a>',
       '<a href="/prefix/path/file/dir/listing/is/cool">cool</a>'
     ].join('/')
+  end
+
+  it "builds routes and links to other applications" do
+    SpecHelperApp.r(:foo).to_s.should == '/other/foo'
+    SpecHelperApp.a(:foo, :bar).should == '<a href="/other/bar">foo</a>'
+    SpecHelperAppTwo.r(:foo).to_s.should == '/other/two/foo'
+    SpecHelperAppTwo.a(:foo, :bar).should == '<a href="/other/two/bar">foo</a>'
+  end
+  it "builds routes when Ramaze.options.prefix is present" do
+    Ramaze.options.prefix = '/prfx'
+    SpecHelperLink.r(:foo).to_s.should == '/prfx/foo'
+    SpecHelperLinkTwo.r(:foo).to_s.should == '/prfx/two/foo'
+    SpecHelperApp.r(:foo).to_s.should == '/prfx/other/foo'
+    SpecHelperAppTwo.r(:foo).to_s.should == '/prfx/other/two/foo'
+
+  end
+  it "builds links when Ramaze.options.prefix is present" do
+    Ramaze.options.prefix = '/prfx'
+    SpecHelperLink.a(:foo, :bar).should == '<a href="/prfx/bar">foo</a>'
+    SpecHelperLinkTwo.a(:foo, :bar).should == '<a href="/prfx/two/bar">foo</a>'
+    SpecHelperApp.a(:foo, :bar).should == '<a href="/prfx/other/bar">foo</a>'
+    SpecHelperAppTwo.a(:foo, :bar).should == '<a href="/prfx/other/two/bar">foo</a>'
   end
 end

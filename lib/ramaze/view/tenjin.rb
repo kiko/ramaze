@@ -4,10 +4,13 @@ module Ramaze
   module View
     module Tenjin
       def self.call(action, string)
-        template = ::Tenjin::Template.new
-        template.convert(string)
+        tenjin = View.compile(string){|s|
+          template = ::Tenjin::Template.new
+          template.convert(s)
+          template
+        }
 
-        html = template.ramaze_render(action.binding)
+        html = tenjin.ramaze_render(action.binding)
 
         return html, 'text/html'
       end
@@ -23,7 +26,7 @@ module Tenjin
     # Tenjin::ContextHelper is not available here. Patches welcome.
     def ramaze_render(binding)
       code = "_buf = #{init_buf_expr}; #{@script}; _buf.to_s"
-      _buf = binding.eval(code, @filename || '(tenjin)')
+      _buf = eval(code, binding, @filename || '(tenjin)')
     end
   end
 end

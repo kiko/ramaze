@@ -1,7 +1,7 @@
 #          Copyright (c) 2009 Michael Fellinger m.fellinger@gmail.com
 # All files in this distribution are subject to the terms of the Ruby license.
 
-require 'spec/helper'
+require File.expand_path('../../../../spec/helper', __FILE__)
 
 spec_precondition 'memcached is running' do
   require 'memcache'
@@ -43,6 +43,12 @@ describe Ramaze::Cache::MemCache do
     cache.fetch(:hello).should == @hello
     sleep 0.3
     cache.fetch(:hello).should == nil
+  end
+
+  should 'amend the ttl if it is too high' do
+    ttl = Ramaze::Cache::MemCache::MAX_TTL + 1
+    cache.store(:hello, @hello, :ttl => ttl)
+    cache.fetch(:hello).should == @hello
   end
 
   should 'clear' do

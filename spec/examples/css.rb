@@ -1,9 +1,9 @@
-require 'spec/helper'
+require File.expand_path('../../../spec/helper', __FILE__)
 spec_require 'haml'
-require 'examples/misc/css'
+require File.expand_path('../../../examples/misc/css', __FILE__)
 
 describe 'CSSController' do
-  behaves_like :mock
+  behaves_like :rack_test
 
   def req(path) r = get(path); [r.content_type, r.body] end
 

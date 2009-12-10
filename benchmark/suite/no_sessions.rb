@@ -1,10 +1,9 @@
-require 'ramaze'
-
 class MainController < Ramaze::Controller
   def index
     "Hello, World!"
   end
 end
 
-Ramaze::Log.loggers = []
-Ramaze::Global.sessions = false
+Ramaze.middleware!(:nosessions){|m| m.run(Ramaze::AppMap) }
+Ramaze.options.mode = :nosessions
+Ramaze::Log.loggers.clear

@@ -144,8 +144,8 @@ class RamazeBenchmark
   end
 
   attr_accessor :requests, :adapters, :port, :log, :display_code, :target
-  attr_accessor :concurrent, :paths, :benchmarker, :informer, :sessions
-  attr_accessor :show_log, :ignored_tags, :formats
+  attr_accessor :concurrent, :paths, :benchmarker, :informer
+  attr_accessor :mode, :show_log, :formats
 
   def initialize()
     @adapters = [:webrick]
@@ -157,10 +157,9 @@ class RamazeBenchmark
     @paths = ["/"]
     @target = /.+/
     @informer = true
-    @sessions = true
-    @ignored_tags = [:debug, :dev]
     @formats = ["text"]
     @writers = []
+    @mode = :live
     yield self
   end
 
@@ -175,8 +174,8 @@ class RamazeBenchmark
     end
 
     # benchmarks
-    __DIR__ = File.expand_path(File.dirname(__FILE__))
-    Dir[__DIR__('suite/*.rb')].each do |filename|
+    glob = File.expand_path('../suite/*.rb', __FILE__)
+    Dir.glob(glob) do |filename|
       @adapters.each do |adapter|
         @paths.each do |path|
           benchmark(filename, adapter, path) if @target.match(filename)
@@ -199,7 +198,6 @@ class RamazeBenchmark
     l :Concurrent, @concurrent
     l :Path,       path
     l :Informer,   @informer
-    l :Sessions,   @sessions
     if @display_code
       l :Code, "<code ruby>\n#{File.read(filename)}\n</code>\n\n"
     end
@@ -248,17 +246,17 @@ class RamazeBenchmark
   def ramaze(filename, adapter)
     pid = fork do
       begin
-        require filename
-        Ramaze::Log.ignored_tags = @ignored_tags
+        require 'ramaze'
+        Ramaze.options.mode = @mode
         if @informer
           unless @show_log
-            Ramaze::Log.loggers = [Ramaze::Logging::Logger::Informer.new("/dev/null")]
+            require 'ramaze/log/informer'
+            Ramaze::Log.loggers = [Ramaze::Logger::Informer.new("/dev/null")]
           end
         else
           Ramaze::Log.loggers = []
         end
-        Ramaze::Global.sessions = @sessions
-        Ramaze::Global.sourcereload = false
+        require filename
         Ramaze.start :adapter => adapter, :port => @port
       rescue LoadError => ex; l :Error, ex; end
     end
@@ -324,21 +322,16 @@ RamazeBenchmark.new do |bm|
       bm.paths = paths.split(",")
     end
 
+    opt.on('--mode MODE', '[live] Ramaze mode') do |mode|
+      bm.mode = mode.to_sym
+    end
+
     opt.on('--no-informer', 'Disable informer') do
       bm.informer = false
     end
 
-    opt.on('--ignored-tags TAGS',
-           '[debug,dev] Specify ignored tags for Ramaze::Log') do |tags|
-      bm.ignored_tags = tags.split(",").map{|e| e.to_sym }
-    end
-
     opt.on('--show-log', 'Show log') do
       bm.show_log = true
-    end
-
-    opt.on('--no-sessions', 'Disable sessions') do
-      bm.sessions = false
     end
 
     opt.on('--target REGEXP',
