@@ -18,5 +18,6 @@ module Ramaze
     else
       path
     end
+    # return '/'
   }
 end

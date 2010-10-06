@@ -3,8 +3,10 @@ module TodoList
     layout :default
     engine :Etanni
     helper :form
-    trait :app => :todolist
+    
+    map '/', :todolist
+    app.location = '/'
   end
 end
 
-require 'controller/task'
+require __DIR__'task'

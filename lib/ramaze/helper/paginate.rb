@@ -39,7 +39,10 @@ module Ramaze
       #   @pager.navigation
       #   @pager.each{|e| puts(e)
       #
-      # +dataset+ may be a Sequel dataset or Array
+      # Note that you must first extend Sequel with the pagination extension.
+      #   Sequel.extension :pagination
+      #
+      # +dataset+ may be a Sequel dataset or an Array
       # +options+ Takes precedence to trait[:paginate] and may contain
       #           following pairs:
       #   :limit  The number of elements used when you call #each on the
@@ -56,7 +59,7 @@ module Ramaze
         limit = options[:limit]
         var   = options[:var]
         page  = options[:page] || (request[var] || 1).to_i
-
+          
         Paginator.new(dataset, page, limit, var)
       end
 

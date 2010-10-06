@@ -3,16 +3,20 @@ require 'cgi'
 
 class WikiEntry
   ENTRIES_DIR = __DIR__('../mkd')
+
   class << self
     def [](name)
-      if File.exist?(ENTRIES_DIR/File.basename(File.expand_path(name)))
+      if File.exist?(File.join(ENTRIES_DIR, File.basename(File.expand_path(name))))
         new(name)
       end
     end
+
     def titles
-      Dir[ENTRIES_DIR/'*'].entries
+      Dir[File.join(ENTRIES_DIR,'*')].entries
     end
   end
+
+  include Ramaze::Helper::CGI
 
   attr_reader :history, :current, :name
 
@@ -27,7 +31,7 @@ class WikiEntry
     @history = Dir["#{base}/*_*.mkd"]
   end
 
-  def save newtext
+  def save(newtext)
     FileUtils.mkdir_p(base)
 
     if content != newtext
@@ -42,7 +46,7 @@ class WikiEntry
   end
 
   def delete
-    FileUtils.rm_rf(base)
+    FileUtils.rm_rf(base) if exists?
   end
 
   def revert
@@ -64,7 +68,11 @@ class WikiEntry
   end
 
   def base
-    ENTRIES_DIR/@name
+    File.join(ENTRIES_DIR, @name)
+  end
+
+  def route
+    MainController.route(:index, name)
   end
 
   def content
@@ -81,21 +89,29 @@ class WikiEntry
 end
 
 class EntryView
-  include Ramaze::Helper::Methods
-  helper :cgi, :link
-
   class << self
-
     def render content
       mkd2html(content || "No Entry")
     end
 
-    def mkd2html text
+    def mkd2html(text)
       html = BlueCloth.new(text).to_html
-      html.gsub!(/\[\[(.*?)\]\]/) do |m|
-        exists = WikiEntry[$1] ? 'exists' : 'nonexists'
-        A(h($1), :href => $1, :class => exists)
+
+      html.gsub!(/\[\[(.*?)\]\]/) do
+        name = $1
+
+        if entry = WikiEntry[name]
+          exists = 'exists'
+          route = entry.route
+        else
+          exists = 'nonexists'
+          route = MainController.route(:index, name)
+        end
+
+        title = Rack::Utils.escape_html(name)
+        "<a href='#{route}' class='#{exists}'>#{title}</a>"
       end
+
       html
     end
   end

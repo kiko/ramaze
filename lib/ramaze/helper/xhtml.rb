@@ -8,7 +8,11 @@ module Ramaze
 
       def css(name, media = 'screen', options = {})
         if options.empty?
-          LINK_TAG % ["/css/#{name}.css", media]
+          if name =~ /^http/ # consider it external full url
+            LINK_TAG % [name, media]
+          else
+            LINK_TAG % ["#{Ramaze.options.prefix.chomp("/")}/css/#{name}.css", media]
+          end
         elsif options[:only].to_s.downcase == 'ie'
           "<!--[if IE]>#{css(name, media)}<![endif]-->"
         end
@@ -22,7 +26,7 @@ module Ramaze
         if name =~ /^http/ # consider it external full url
           SCRIPT_TAG % name
         else
-          SCRIPT_TAG % "/js/#{name}.js"
+          SCRIPT_TAG % "#{Ramaze.options.prefix.chomp("/")}/js/#{name}.js"
         end
       end
 

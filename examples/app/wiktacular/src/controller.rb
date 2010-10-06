@@ -1,9 +1,11 @@
 class MainController < Ramaze::Controller
-  
+  layout :application
+  before_all {setup}
 
-  def index handle = "main"
-    @handle = handle
+  def index(handle = "main")
     @entry = WikiEntry.new(handle)
+    @handle = @entry.name
+
     if @entry.exists?
       @text = EntryView.render(@entry.content)
       @history = @entry.history.map{|f|
@@ -15,41 +17,39 @@ class MainController < Ramaze::Controller
     end
   end
 
-  def edit handle
-    @handle = handle
+  def edit(handle)
     @entry = WikiEntry.new(handle)
+    @handle = @entry.name
     @text = @entry.content
   end
 
-  def revert handle
+  def revert(handle)
     WikiEntry[handle].revert
-    redirect Rs(handle)
+    redirect route(handle)
   end
 
-  def unrevert handle
+  def unrevert(handle)
     WikiEntry[handle].unrevert
-    redirect Rs(handle)
+    redirect route(handle)
   end
 
-  def delete handle
-    WikiEntry[handle].delete
+  def delete(handle)
+    WikiEntry.new(handle).delete
     redirect_referer
   end
 
   def save
     redirect_referer unless request.post?
+
     handle = request['handle']
     entry = WikiEntry.new(handle)
     entry.save(request['text'])
-    redirect Rs(:index, handle)
+    redirect entry.route
   end
 
-  def html_layout
+  def setup
     @nodes = WikiEntry.titles.map{|f|
-        name = File.basename(f)
-        %[<a href="/#{name}">#{name}</a>]
-      }.join("\n")
+      anchor File.basename(f)
+    }.join("\n")
   end
-
-  layout '/html_layout'
 end
