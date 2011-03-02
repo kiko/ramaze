@@ -23,7 +23,6 @@ module Ramaze
   class << self; attr_accessor :options; end
 
   # vendored, will go into rack-contrib
-  require 'vendor/etag'
   require 'vendor/route_exceptions'
 
   # Ramaze itself
@@ -67,7 +66,14 @@ module Ramaze
     m.use Rack::ShowStatus
     m.use Rack::RouteExceptions
     m.use Rack::ConditionalGet
-    m.use Rack::ETag
+
+    # FIXME: This works around differences between Rack 1.2.1 and the git HEAD
+    if Rack::ETag.instance_method(:initialize).arity == 1
+      m.use Rack::ETag
+    else
+      m.use Rack::ETag, 'public'
+    end
+
     m.use Rack::Head
     m.use Ramaze::Reloader
     m.run Ramaze::AppMap
@@ -78,6 +84,14 @@ module Ramaze
     m.use Rack::RouteExceptions
     m.use Rack::ShowStatus
     m.use Rack::ConditionalGet
+
+    # FIXME: This works around differences between Rack 1.2.1 and the git HEAD
+    if Rack::ETag.instance_method(:initialize).arity == 1
+      m.use Rack::ETag
+    else
+      m.use Rack::ETag, 'public'
+    end
+
     m.use Rack::ETag
     m.use Rack::Head
     m.run Ramaze::AppMap

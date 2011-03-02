@@ -4,7 +4,7 @@
 require File.expand_path('../../../../spec/helper', __FILE__)
 spec_require 'sequel'
 
-DB = Sequel.sqlite
+DB = Sequel.sqlite(':memory:')
 
 describe Ramaze::Cache::Sequel do
   Ramaze.options.cache.names = [:one, :two]
@@ -14,38 +14,38 @@ describe Ramaze::Cache::Sequel do
   cache = Ramaze::Cache.one
   hello = 'Hello, World!'
 
-  should 'store without ttl' do
-    cache.store(:hello, hello).should == hello
+  should 'Store some data without a TTL' do
+    cache.store(:hello, hello).should.equal hello
   end
 
-  should 'fetch' do
-    cache.fetch(:hello).should == hello
+  should 'Fetch a cache item' do
+    cache.fetch(:hello).should.equal hello
   end
 
-  should 'delete' do
+  should 'Delete a cache item' do
     cache.delete(:hello)
     cache.fetch(:hello).should == nil
   end
 
-  should 'delete two key/value pairs at once' do
-    cache.store(:hello, hello).should == hello
-    cache.store(:ramaze, 'ramaze').should == 'ramaze'
+  should 'Delete two key/value pairs at once' do
+    cache.store(:hello, hello).should.equal hello
+    cache.store(:ramaze, 'ramaze').should.equal 'ramaze'
     cache.delete(:hello, :ramaze)
-    cache.fetch(:hello).should == nil
-    cache.fetch(:innate).should == nil
+    cache.fetch(:hello).should.equal nil
+    cache.fetch(:innate).should.equal nil
   end
 
-  should 'store with ttl' do
-    cache.store(:hello, @hello, :ttl => 0.2)
-    cache.fetch(:hello).should == @hello
-    sleep 0.3
-    cache.fetch(:hello).should == nil
+  should 'Store some data with a TTL' do
+    cache.store(:hello, @hello, :ttl => 1)
+    cache.fetch(:hello).should.equal @hello
+    sleep 2
+    cache.fetch(:hello).should.equal nil
   end
 
-  should 'clear' do
+  should 'Clear the cache' do
     cache.store(:hello, @hello)
-    cache.fetch(:hello).should == @hello
+    cache.fetch(:hello).should.equal @hello
     cache.clear
-    cache.fetch(:hello).should == nil
+    cache.fetch(:hello).should.equal nil
   end
 end

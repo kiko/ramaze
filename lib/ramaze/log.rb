@@ -15,6 +15,19 @@ end
 module Ramaze
   Log = Innate::Log
 
+  ##
+  # Logger module that will autoload a certain logging helper if it's needed.
+  # Ramaze ships with the following logging helpers:
+  #
+  #   * Analogger
+  #   * Knotify
+  #   * Syslog
+  #   * Growl
+  #   * Xosd
+  #   * Logger
+  #   * Informer
+  #   * RotatingInformer
+  #
   module Logger
     autoload :Analogger, 'ramaze/log/analogger'
     autoload :Knotify,   "ramaze/log/knotify"

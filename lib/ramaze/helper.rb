@@ -3,6 +3,7 @@
 
 require 'innate/helper'
 
+# TODO: Describe what this module does besides loading a few default helper.
 module Ramaze
   Helper = Innate::Helper
   Innate::HelpersHelper.options.paths << File.dirname(__FILE__)

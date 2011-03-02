@@ -4,9 +4,10 @@
 module Ramaze
   module Logger
 
+    ##
     # A minimal logger for Ramaze, supports files, CLI, colors and some
     # customization.
-
+    #
     class Informer
       include Logging
       include Innate::Traited
@@ -31,17 +32,21 @@ module Ramaze
         :error => :red,
       }
 
+      ##
       # Create a new instance of Informer.
-      # You can spcify
       #
-      # Examples:
+      # @example
+      #
       #   Informer.new                    #=> logs to stdout with all levels being
       #                                       shown.
       #   Informer.new($stderr)           #=> same, but to stderr
       #   Informer.new("foo.log")         #=> same, but logs to the file foo.log
       #                                       (or creates it if it doesn't exist yet)
       #   Informer.new($stdout, [:info])  #=> show only #info messages to stdout.
-
+      #
+      # @param [String] out Specifies where the output should go. By default this is set to STDOUT.
+      # @param [Array] log_leves Array containing the levels that should be logged.
+      #
       def initialize(out = $stdout, log_levels = [:debug, :error, :info, :warn])
         @colorize = false
 
@@ -68,8 +73,9 @@ module Ramaze
         @log_levels = log_levels
       end
 
+      ##
       # Close the file we log to if it isn't closed already.
-
+      #
       def shutdown
         if @out.respond_to?(:close)
           Log.debug("close, #{@out.inspect}")
@@ -77,8 +83,12 @@ module Ramaze
         end
       end
 
-      # Integration to Logging.
-
+      ##
+      # Integration to Logging
+      #
+      # @param [String] tag The log level for the current message(s).
+      # @param [Array] messages Array containing the data that should be logged.
+      #
       def log tag, *messages
         return if closed? || !@log_levels.include?(tag)
         messages.flatten!
@@ -97,9 +107,14 @@ module Ramaze
         @out.flush if @out.respond_to?(:flush)
       end
 
+      ##
       # Takes the prefix (tag), text and timestamp and applies it to
       # the :format trait.
-
+      #
+      # @param [String] prefix
+      # @param [String] text
+      # @param [Integer] time
+      #
       def log_interpolate prefix, text, time = timestamp
         message = class_trait[:format].dup
 
@@ -109,17 +124,19 @@ module Ramaze
         message
       end
 
+      ##
       # This uses timestamp trait or a date in the format of
       #   %Y-%m-%d %H:%M:%S
       #   # => "2007-01-19 21:09:32"
-
+      #
       def timestamp
         mask = class_trait[:timestamp]
         Time.now.strftime(mask || "%Y-%m-%d %H:%M:%S")
       end
 
-      # is @out closed?
-
+      ##
+      # Is @out closed?
+      #
       def closed?
         @out.respond_to?(:closed?) and @out.closed?
       end

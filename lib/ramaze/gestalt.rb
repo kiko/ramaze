@@ -1,85 +1,91 @@
 #          Copyright (c) 2009 Michael Fellinger m.fellinger@gmail.com
 # All files in this distribution are subject to the terms of the Ruby license.
 
-=begin rdoc
-Example:
-
-  require 'ramaze'
-  require 'ramaze/gestalt'
-
-  page = Ramaze::Gestalt.build{
-    title = 'Hello, World!'
-
-    html do
-      head{ title(title) }
-      body do
-        h1(title)
-        p 'I count to 10'
-        ('1'..'10').each do |count|
-          div(:style => 'width: 25px; height: 25px'){ count }
-        end
-      end
-    end
-  }
-=end
-
 module Ramaze
 
+  ##
   # Gestalt is the custom HTML/XML builder for Ramaze, based on a very simple
   # DSL it will build your markup.
-
+  #
+  # @example
+  #
+  #   html =
+  #     Gestalt.build do
+  #       html do
+  #         head do
+  #           title "Hello, World!"
+  #         end
+  #         body do
+  #           h1 "Hello, World!"
+  #         end
+  #       end
+  #     end
+  #
   class Gestalt
     attr_accessor :out
 
+    ##
     # The default way to start building your markup.
     # Takes a block and returns the markup.
     #
-    # Example:
-    #   html =
-    #     Gestalt.build do
-    #       html do
-    #         head do
-    #           title "Hello, World!"
-    #         end
-    #         body do
-    #           h1 "Hello, World!"
-    #         end
-    #       end
-    #     end
+    # @param [Block] block 
     #
-
     def self.build(&block)
       self.new(&block).to_s
     end
 
+    ##
     # Gestalt.new is like ::build but will return itself.
     # you can either access #out or .to_s it, which will
     # return the actual markup.
     #
     # Useful for distributed building of one page.
-
+    #
+    # @param [Block] block
+    #
     def initialize(&block)
       @out = []
       instance_eval(&block) if block_given?
     end
 
-    # catching all the tags. passing it to _gestalt_build_tag
-
+    ##
+    # Catching all the tags. passing it to _gestalt_build_tag
+    #
+    # @param [String] method The method that was called.
+    # @param [Hash] args Additional arguments passed to the called method.
+    # @param [Block] block
+    #
     def method_missing(meth, *args, &block)
       _gestalt_call_tag meth, args, &block
     end
 
-    # workaround for Kernel#p to make <p /> tags possible.
-
+    ##
+    # Workaround for Kernel#p to make <p /> tags possible.
+    #
+    # @param [Hash] args Extra arguments that should be processed before creating the paragraph tag.
+    # @param [Block] block
+    #
     def p(*args, &block)
       _gestalt_call_tag :p, args, &block
     end
-
-    # workaround for Kernel#select to make <select></select> work
+    
+    ##
+    # Workaround for Kernel#select to make <select></select> work.
+    #
+    # @param [Hash] args Extra arguments that should be processed before creating the select tag.
+    # @param [Block] block
+    #
     def select(*args, &block)
       _gestalt_call_tag(:select, args, &block)
     end
 
+    ##
+    # TODO: Describe this method, I'm not exactly sure what it does - Yorick
+    #
+    # @param [String] name
+    # @param [Hash] args
+    # @param [Block] block
+    #
     def _gestalt_call_tag(name, args, &block)
       if args.size == 1 and args[0].kind_of? Hash
         # args are just attributes, children in block...
@@ -93,9 +99,16 @@ module Ramaze
       end
     end
 
-    # build a tag for `name`, using `args` and an optional block that
-    # will be yielded
-
+    ##
+    # Build a tag for `name`, using `args` and an optional block that
+    # will be yielded.
+    #
+    # TODO: Describe this method since I'm not exactly sure what it does - Yorick
+    #
+    # @param [String] name
+    # @param [Hash] attr
+    # @param [Hash] text
+    #
     def _gestalt_build_tag(name, attr = {}, text = [])
       @out << "<#{name}"
       @out << attr.map{|(k,v)| %[ #{k}="#{_gestalt_escape_entities(v)}"] }.join
@@ -112,6 +125,11 @@ module Ramaze
       end
     end
 
+    ##
+    # Replace common HTML characters such as " and < with their entities.
+    #
+    # @param [String] s The HTML string that needs to be escaped.
+    #
     def _gestalt_escape_entities(s)
       s.to_s.gsub(/&/, '&amp;').
         gsub(/"/, '&quot;').
@@ -120,10 +138,21 @@ module Ramaze
         gsub(/>/, '&gt;')
     end
 
+    ##
+    # TODO: Describe this method since I'm not exactly sure what it does - Yorick
+    #
+    # @param [String] name
+    # @param [Hash] args
+    # @param [Block] block
+    #
     def tag(name, *args, &block)
       _gestalt_call_tag(name.to_s, args, &block)
     end
 
+    ##
+    # Convert the final output of Gestalt to a string.
+    # This method has the following alias: "to_str".
+    #
     def to_s
       @out.join
     end

@@ -14,7 +14,7 @@ module Ramaze
   # On the first request, for example on registering:
   #
   #   flash[:error] = "You should reconsider your username, it's taken already"
-  #   redirect R(self, :register)
+  #   redirect r(:register)
   #
   # This is the request from the redirect:
   #
@@ -28,7 +28,9 @@ module Ramaze
 
       trait :flashbox => "<div class='flash' id='flash_%key'>%value</div>"
 
-      # answers with Current.session.flash
+      ##
+      # Return the current value of Current.session.flash
+      #
       def flash
         Current.session.flash
       end

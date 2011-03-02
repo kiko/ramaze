@@ -3,6 +3,10 @@ require 'locale'
 
 module Ramaze
   module Helper
+    ##
+    # The localization helper can be used to output translated strings.
+    # This enables your application to use multiple language files for English, Dutch and so on.
+    #
     module Localize
       include Traited
 

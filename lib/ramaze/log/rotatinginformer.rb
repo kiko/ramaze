@@ -2,8 +2,11 @@ module Ramaze
 
   module Logger
 
+    ##
     # A customized logger (based on Informer) that creates multiple log files based on time
-
+    #
+    # TODO: This class isn't fully documented and could use a few improvements.
+    #
     class RotatingInformer
       include Innate::Traited
       include Logging
@@ -16,7 +19,8 @@ module Ramaze
 
       # This is how the final output is arranged.
       trait :format => "[%time] %prefix  %text"
-
+      
+      ##
       # Create a new instance of RotatingInformer.
       #
       # base_dir is the directory where all log files will be stored
@@ -29,21 +33,24 @@ module Ramaze
       # that the log receives. The array may contain
       # any or all of the symbols :debug, :error, :info and/or :warn
       #
-      # Examples:
+      # @example
+      #   
+      #   # Creates logs in directory called logs. The generated filenames will be in the form YYYY-MM-DD.log
       #   RotatingInformer.new('logs')
-      #                                   #=> Creates logs in directory called logs.
-      #                                       The generated filenames will be in the
-      #                                       form YYYY-MM-DD.log
+      #
+      #   
+      #   # Creates logs in directory called logs. The generated filenames will be in the form YYYY-MM.txt
       #   RotatingInformer.new('logs', '%Y-%m.txt')
-      #                                   #=> Creates logs in directory called logs.
-      #                                       The generated filenames will be in the
-      #                                       form YYYY-MM.txt
+      #                                   
+      #
+      #   # Creates logs in directory called logs. The generated filenames will be in the form YYYY-MM.txt. 
+      #   # Only errors will be logged to the files.
       #   RotatingInformer.new('logs', '%Y-%m.txt', [:error])
-      #                                   #=> Creates logs in directory called logs.
-      #                                       The generated filenames will be in the
-      #                                       form YYYY-MM.txt. Only errors will be
-      #                                       logged to the files.
-
+      #
+      # @param [String] base_dir The base directory for all the log files.
+      # @param [String] time_format The time format for all log files.
+      # @param [Array] log_levels Array containing the type of messages to log.
+      #
       def initialize(base_dir, time_format = '%Y-%m-%d.log', log_levels = [:debug, :error, :info, :warn])
         # Verify and set base directory
         send :base_dir=, base_dir, true
@@ -55,6 +62,7 @@ module Ramaze
         @in_shutdown = false
       end
 
+      ##
       # Set the base directory for log files
       #
       # If this method is called with the raise_exception
@@ -63,8 +71,11 @@ module Ramaze
       #
       # If raise_exception is set to false, the method will just
       # silently fail if the specified directory does not exist
-      # or is unwritable
-
+      # or is unwritable.
+      #
+      # @param [String] directory The base directory specified by the developer.
+      # @param [Bool] raise_exception Boolean that indicates if an exception should be raised if the base directory doesn't exist.
+      #
       def base_dir=(directory, raise_exception = false)
         # Expand directory path
         base_dir = File.expand_path(directory)
@@ -86,8 +97,9 @@ module Ramaze
         end
       end
 
+      ##
       # Close the file we log to if it isn't closed already.
-
+      #
       def shutdown
         if @out.respond_to?(:close)
           unless @in_shutdown
@@ -99,8 +111,12 @@ module Ramaze
         end
       end
 
+      ##
       # Integration to Logging.
-
+      #
+      # @param [String] tag The type of message we're logging.
+      # @param [Array] messages An array of messages to log.
+      #
       def log tag, *messages
 
         return unless @log_levels.include?(tag)
@@ -119,9 +135,14 @@ module Ramaze
         @out.flush if @out.respond_to?(:flush)
       end
 
+      ##
       # Takes the prefix (tag), text and timestamp and applies it to
       # the :format trait.
-
+      #
+      # @param [String] prefix
+      # @param [String] text
+      # @param [Integer] time
+      #
       def log_interpolate prefix, text, time = timestamp
         message = class_trait[:format].dup
 
@@ -131,27 +152,30 @@ module Ramaze
         message
       end
 
+      ##
       # This uses timestamp trait or a date in the format of
       #   %Y-%m-%d %H:%M:%S
       #   # => "2007-01-19 21:09:32"
-
+      #
       def timestamp
         mask = class_trait[:timestamp]
         Time.now.strftime(mask || "%Y-%m-%d %H:%M:%S")
       end
 
-      # is @out closed?
-
+      ##
+      # Is @out closed?
+      #
       def closed?
         @out.respond_to?(:closed?) && @out.closed?
       end
 
       private
 
+      ##
       # Checks whether current filename is still valid.
       # If not, update the current log to point at the new
       # filename
-
+      #
       def update_current_log
         out = File.join(@base_dir, Time.now.strftime(@time_format))
         if @out.nil? || @out.path != out

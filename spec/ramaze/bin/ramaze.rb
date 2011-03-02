@@ -54,7 +54,7 @@ USAGE = <<TXT
 	  -P, --pid FILE           file to store PID (default: rack.pid)
 
 	Common options:
-	  -h, --help               Show this message
+	  -h, -?, --help           Show this message
 	      --version            Show version
 TXT
 

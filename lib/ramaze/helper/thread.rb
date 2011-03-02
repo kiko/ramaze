@@ -3,6 +3,11 @@
 
 module Ramaze
   module Helper::Thread
+    ##
+    # The thread method executes the specified block in a new thread.
+    #
+    # @param [Block] block The block that contains the code that will be executed in the new thread.
+    #
     def thread &block
       parent_thread = Thread.current
       Thread.new do

@@ -2,6 +2,7 @@
 # All files in this distribution are subject to the terms of the Ruby license.
 
 module Ramaze
+  # TODO: Describe what this class does other than initailizing the Controller system.
   class Controller
     include Innate::Traited
     include Innate::Node

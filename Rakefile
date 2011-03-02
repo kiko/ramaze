@@ -21,7 +21,7 @@ PROJECT_COPYRIGHT   = [
 ]
 
 DEPENDENCIES = {
-  'innate' => {:version => '= 2010.03'},
+  'innate' => {:version => '>= 2010.03'},
 }
 
 DEVELOPMENT_DEPENDENCIES = {
@@ -32,14 +32,12 @@ DEVELOPMENT_DEPENDENCIES = {
   "erector"                 => {:version => "0.7.2"},
   "erubis"                  => {:version => "2.6.5"},
   "ezamar"                  => {:version => "2009.06"},
-  "gemcutter"               => {:version => "0.5.0"},
   "haml"                    => {:version => "2.2.22"},
   "hpricot"                 => {:version => "0.8.2"},
   "json"                    => {:version => "1.2.3"},
   "less"                    => {:version => "1.2.21"},
   "liquid"                  => {:version => "2.0.0"},
   "locale"                  => {:version => "2.0.5"},
-  "localmemcache"           => {:version => "0.4.4"},
   "lokar"                   => {:version => "0.1.0"},
   "maruku"                  => {:version => "0.6.0"},
   "memcache-client"         => {:version => "1.8.1", :lib => 'memcache'},
@@ -58,6 +56,11 @@ DEVELOPMENT_DEPENDENCIES = {
   "tagz"                    => {:version => "7.2.3"},
   "tenjin"                  => {:version => "0.6.1"},
 }
+
+# Localmemcache doesn't work properly on OS X so we should ignore it
+if !RUBY_PLATFORM.include? 'darwin'
+  DEVELOPMENT_DEPENDENCIES['localmemcache'] = {:version => "0.4.4"}
+end
 
 GEMSPEC = Gem::Specification.new{|s|
   s.name         = 'ramaze'

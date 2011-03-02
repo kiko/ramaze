@@ -1,90 +1,68 @@
-#          Copyright (c) 2009 Michael Fellinger m.fellinger@gmail.com
-# All files in this distribution are subject to the terms of the Ruby license.
-
 require File.expand_path('../../../../spec/helper', __FILE__)
 spec_require 'erector'
 
-Ramaze::App.options.views = 'erector'
+# Define what view and layout we'll need to load
+Ramaze::App.options.views   = 'erector'
 Ramaze::App.options.layouts = 'erector'
 
+##
+# Core spec class for the test.
+# This class is nothing more than a regular controller but is called using Bacon instead of a browser.
+#
 class SpecErector < Ramaze::Controller
+  # Map the controller to the root of the server.
   map '/'
-  engine :Erector
-  helper :erector
+  
+  # Set the engine to Erector. We can't test Erector if we're not using it can we?
+  engine :erector
+  helper :erector, :thread
   layout :layout
-
-  def invoke_helper_method 
-  end
-
+  
+  # The index method loads a very basic view in a layout.
   def index
-    erector { h1 "Erector Index" }
   end
-
-  def links
-    erector {
-      ul {
-        li { a(:href => r(:index)) { text "Index page" } }
-        li { a(:href => r(:internal)){ text "Internal template" } }
-        li { a(:href => r(:external)){ text "External template" } }
-      }
-    }
+  
+  # The tables method loads a view that contains a html table.
+  def tables
+    @users = [{:name => 'Yorick Peterse', :age => 18}, {:name => 'Chuck Norris', :age => 9000}, {:name => 'Bob Ross', :age => 53}]
   end
-
-  def strict_xhtml
+  
+  # Render a view inside a view
+  def view
   end
-
-  def ie_if
-    erector {
-      ie_if("lt IE 8") {
-        css "ie.css"
-        css "test2.css", :media => 'screen'
-      }
-    }
-  end
-
-  def css
-    erector {
-      css "test.css", :media => 'screen'
-    }
-  end
-
-  def sum(num1, num2)
-    @num1, @num2 = num1.to_i, num2.to_i
-  end
+  
 end
 
+# Testing time!
 describe Ramaze::View::Erector do
+  # The test type is a basic Rack based test.
   behaves_like :rack_test
+  
+  # Render the index view. This is a basic view wrapped in a layout
+  it 'Render a basic layout and view' do
+    got = get '/'
 
-  should 'use erector methods' do
-    get('/').body.should == '<div><h1>Erector Index</h1></div>'
+    got.status.should.equal 200
+    got['Content-Type'].should.equal 'text/html'
+    got.body.strip.should.equal '<html><head><title>erector</title></head><body><p>paragraph text</p></body></html>'
   end
-
-  should 'use other helper methods' do
-    get('/links').body.should == '<div><ul><li><a href="/index">Index page</a></li><li><a href="/internal">Internal template</a></li><li><a href="/external">External template</a></li></ul></div>'
+  
+  # Render the tables view
+  it 'Render a view with an HTML table' do
+    got = get '/tables'
+    
+    got.status.should.equal 200
+    got['Content-Type'].should.equal 'text/html'
+    got.body.strip.should.equal '<html><head><title>erector</title></head><body><table><thead><tr><th>Name</th><th>Age</th></tr></thead><tbody><tr><td>Yorick Peterse</td><td>18</td></tr><tr><td>Chuck Norris</td><td>9000</td></tr><tr><td>Bob Ross</td><td>53</td></tr></tbody></table></body></html>'
   end
-
-  should 'render external template' do
-    get('/external').body.should == "<div><h1>External Erector View Template</h1></div>"
+  
+  # Render a view inside a view
+  it 'Render a view inside a view' do
+    got = get '/view'
+    
+    got.status.should.equal 200
+    got['Content-Type'].should.equal 'text/html'
+    got.body.strip.should.equal '<html><head><title>erector</title></head><body><h2>Hello, view!</h2><p>view body.</p></body></html>'
   end
-
-  should 'render external template with instance variables' do
-    get('/sum/1/2').body.should == '<div><p>3</p></div>'
-  end
-
-  should 'render external strict xhtml template' do
-    get('/strict_xhtml').body.should == "<div><?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"DTD/xhtml1-strict.dtd\"><html lang=\"en\" xml:lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\"><p>STRICT!</p></html></div>"
-  end
-
-  should 'render css link with merged options' do
-    get('/css').body.should == "<div><link href=\"test.css\" media=\"screen\" rel=\"stylesheet\" type=\"text/css\" /></div>"
-  end
-
-  should 'render ie conditional' do
-    get('/ie_if').body.should == "<div><!--[if lt IE 8]><link href=\"ie.css\" rel=\"stylesheet\" type=\"text/css\" /><link href=\"test2.css\" media=\"screen\" rel=\"stylesheet\" type=\"text/css\" /><![endif]--></div>"
-  end
-
-  should 'invoke helper methods from external template'  do
-    get('/invoke_helper_method').body.should == "<div><a href=\"/index\">Index page</a></div>"
-  end
+  
 end
