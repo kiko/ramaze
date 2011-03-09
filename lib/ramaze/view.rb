@@ -34,7 +34,7 @@ module Ramaze
     auto_register :Nagoro,     :nag
     auto_register :RedCloth,   :redcloth
     auto_register :Remarkably, :rem
-    auto_register :Sass,       :sass
+    auto_register :Sass,       :sass, :scss
     auto_register :Tagz,       :tagz
     auto_register :Tenjin,     :rbhtml, :tenjin
     auto_register :Slippers,   :st

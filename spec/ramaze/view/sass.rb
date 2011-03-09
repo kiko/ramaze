@@ -39,6 +39,24 @@ body
   end
 end
 
+class SpecScss < Ramaze::Controller
+  map '/scss'
+  provide :css, :Sass
+  trait :sass_options => { :syntax => :scss }
+
+  def style
+%<
+body{
+  margin: 1em;
+
+  #content {
+    text-align: center;
+  }
+}
+>
+  end
+end
+
 describe Ramaze::View::Sass do
   behaves_like :rack_test
 
@@ -69,5 +87,16 @@ describe Ramaze::View::Sass do
     got.status.should == 200
     got['Content-Type'].should == 'text/css'
     got.body.should.not =~ /^ +/
+  end
+
+  should 'render scss syntax' do
+    got = get('scss/style.css')
+    got.status.should == 200
+    got['Content-Type'].should == 'text/css'
+    got.body.strip.should ==
+"body {
+  margin: 1em; }
+  body #content {
+    text-align: center; }"
   end
 end
